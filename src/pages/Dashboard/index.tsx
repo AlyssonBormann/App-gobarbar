@@ -39,6 +39,8 @@ const Dashboard: React.FC = () =>{
   useEffect(()=>{
     api.get('/providers').then((response)=>{
       setProviders(response.data);
+      console.log(user.avatar_url);
+      console.log('essa buceta ta ido');
     });
   },[]);
 
@@ -73,10 +75,10 @@ console.log(user.avatar_url);
         }
         renderItem={({ item: provider })=> (
             <ProviderContainer onPress={()=> navigateToCreateAppointment(provider.id)}>
-              <ProviderAvatar source={{uri: user.avatar_url}}/>
+              <ProviderAvatar source={{uri: provider.avatar_url ?? 'https://api.adorable.io/avatars/64/abott@adorable.png'}}/>
 
               <ProviderInfo>
-                <ProviderName>{user.name}</ProviderName>
+                <ProviderName>{provider.name}</ProviderName>
 
                 <ProviderMeta>
                   <Icon name="calendar" size={14} color="#ff9000"/>
