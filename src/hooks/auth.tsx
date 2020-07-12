@@ -2,9 +2,15 @@ import React, { createContext, useCallback, useState, useContext, useEffect} fro
 import AsyncStorage from '@react-native-community/async-storage';
 import api from '../services/api';
 
+interface User{
+  id: string;
+  name: string;
+  email: string;
+  avatar_url: string;
+}
 interface AuthState{
     token: string;
-    user: object;
+    user: User;
 }
 interface SignInCredentials{
     email: string;
@@ -12,7 +18,8 @@ interface SignInCredentials{
 }
 
 interface AuthContextData{
-    user: object;
+    user: User;
+    loading: boolean;
     signIn(credentials: SignInCredentials): Promise<void>;
     signOut(): void;
 }
@@ -21,6 +28,7 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC = ({ children }) => {
     const [data, setData] = useState<AuthState>({} as AuthState);
+    const [ loading, setLoading ] = useState(true);
 
     useEffect(()=>{
         async function loadStoragedData(): Promise<void>{
@@ -29,9 +37,11 @@ const AuthProvider: React.FC = ({ children }) => {
                 '@Gobarber:user'
             ]);
 
-            if(token[0] && user[1]){
-                setData({token: token[0], user: JSON.parse(user[1])})
+            if(token[1] && user[1]){
+                setData({token: token[1], user: JSON.parse(user[1])})
             }
+
+            setLoading(false);
         }
 
         loadStoragedData();
@@ -50,7 +60,6 @@ const AuthProvider: React.FC = ({ children }) => {
           ['@GoBarber:user', JSON.stringify(user)]
       ]);
 
-      api.defaults.headers.authorization = `Bearer ${token}`;
       setData({ token, user });
     }, []);
 
@@ -65,7 +74,7 @@ const AuthProvider: React.FC = ({ children }) => {
 
     return (
       <AuthContext.Provider
-        value={{ user: data.user, signIn, signOut }}
+        value={{ user: data.user, loading, signIn, signOut }}
       >
         {children}
       </AuthContext.Provider>
