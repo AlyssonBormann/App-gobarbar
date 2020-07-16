@@ -116,7 +116,7 @@ const Profile: React.FC = () => {
       }
     }, [navigation, updateUser]);
 
-    const handleUpdateAvatar = useCallback(()=>{
+    const handleUpdateAvatar = useCallback(async ()=>{
       ImagePicker.showImagePicker({
         title:'Selecione um avatar',
         cancelButtonTitle: 'Cancelar',
@@ -139,14 +139,19 @@ const Profile: React.FC = () => {
           type: 'image/jpeg',
           name: `${user.id}.jpg`,
           uri: response.uri,
-        })
+        });
 
-        api.patch('/users/avatar', data).then(apiResponse=>{
-          updateUser(apiResponse.data);
-        })
+        console.log(response.uri);
+
+        api.patch('users/avatar', data, {
+        }).then((apiResponse)=>{
+          console.log('essa buceta chego aqui');
+          updateUser(apiResponse.data)
+        }).catch(err=> console.log(err));
 
       },)
     },[updateUser, user.id])
+
 
   return (
     <>
